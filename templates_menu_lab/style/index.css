@@ -1,0 +1,19 @@
+/* Styles for templates-menu-lab (optional) */
+
+/* Garante que o menu "Templates" e o dropdown sejam clicáveis e fiquem acima de overlays */
+#jp-mainmenu-templates-menu {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+#jp-mainmenu-templates-menu .p-MenuBar-item,
+#jp-mainmenu-templates-menu .lm-MenuBar-item {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+
+/* Dropdown do Lumino no menu principal: z-index alto para ficar acima da sidebar e de modais */
+.jp-MainMenu .lm-Menu,
+.jp-MainMenu .p-Menu {
+  z-index: 10000 !important;
+  pointer-events: auto !important;
+}
