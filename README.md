@@ -16,7 +16,7 @@ O `.whl` inclui **servidor** e **labextension** (menu). Os [releases do GitHub](
 pip install templates_menu-0.1.0-py3-none-any.whl
 ```
 
-**Labextension (menu na barra):** O wheel instala a extensão em `$PREFIX/share/jupyter/labextensions/templates-menu-lab/`. Se noutro ambiente o menu não aparecer, copie a pasta para `$PREFIX/share/jupyter/labextensions/` ou use `jupyter labextension install <caminho>`.
+**Labextension (menu na barra):** O wheel instala a extensão em `$PREFIX/share/jupyter/labextensions/linea-tutorials-menu/`. Se noutro ambiente o menu não aparecer, copie a pasta para `$PREFIX/share/jupyter/labextensions/` ou use `jupyter labextension install <caminho>`.
 
 **JupyterLab 4:** Depois de instalar o wheel, é **obrigatório** rodar **`jupyter lab build`** (exige **Node.js** no ambiente). Sem isso o menu pode não aparecer.
 
@@ -72,9 +72,20 @@ cd templates_menu_lab && npm install && npm run build:lib && jupyter labextensio
 python -m build --wheel --outdir dist/ --no-isolation
 ```
 
-O arquivo `.whl` fica em `dist/`. O wheel inclui apenas a **labextension** em `share/jupyter/labextensions/templates-menu-lab/` (schemas, static JS, package.json). Templates não vêm no wheel; na instalação use `JUPYTER_TEMPLATES_DIR` apontando para um diretório local.
+O arquivo `.whl` fica em `dist/`. O wheel inclui apenas a **labextension** em `share/jupyter/labextensions/linea-tutorials-menu/` (schemas, static JS, package.json). Templates não vêm no wheel; na instalação use `JUPYTER_TEMPLATES_DIR` apontando para um diretório local.
 
-**Segurança (npm audit):** O `npm audit` em `templates_menu_lab` pode reportar vulnerabilidades em **devDependencies** (webpack, @jupyterlab/builder, etc.). Essas dependências são só para build; **não entram no .whl** distribuído. Para zerar o audit seria necessário Node 20+ (ex.: `serialize-javascript@7.0.3`) ou atualizações do próprio JupyterLab.
+**Segurança (npm audit):** Em `templates_menu_lab` rode `npm audit fix`; as dependências de build não entram no .whl distribuído.
+
+---
+
+## Segurança (servidor)
+
+A API `/templates-menu/create` valida todos os paths para evitar **path traversal** (CWE-22/CWE-23):
+
+- **template_id:** só são aceites paths relativos dentro de `JUPYTER_TEMPLATES_DIR`; `..` e paths absolutos são rejeitados; usa-se `Path.resolve()` e `is_relative_to()` para garantir que o ficheiro fonte fica dentro do diretório de templates.
+- **cwd (query):** o diretório de destino é resolvido e obrigado a ficar dentro do `root_dir` do Jupyter; em caso de path inválido ou traversal, usa-se a raiz do utilizador.
+- **Respostas de erro:** em falhas 500 não se expõe `str(exception)` ao cliente; o detalhe fica apenas em log (debug).
+- A API requer `@web.authenticated` (Jupyter Server).
 
 ---
 
