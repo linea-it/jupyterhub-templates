@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling", "hatch-jupyter-builder"]
+build-backend = "hatchling.build"
+
+[project]
+name = "templates-menu"
+version = "0.1.0"
+description = "JupyterLab menu 'Templates' with submenus to create notebooks from templates"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "BSD-3-Clause"
+dependencies = [
+    "jupyter-server>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "hatch-jupyter-builder",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["templates_menu"]
+
+[tool.hatch.build.targets.wheel.shared-data]
+# Instala em prefix/share/jupyter/... (evita site-packages ou prefix/jupyter/...)
+# Templates não vêm no wheel: apontar JUPYTER_TEMPLATES_DIR na instalação (ex.: /opt/notebook-templates)
+"templates_menu_lab/labextension/" = "share/jupyter/labextensions/templates-menu-lab/"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "templates_menu",
+    "templates_menu_lab",
+    "templates",
+]
+
+[tool.jupyterlab.builder]
+# Diretório da extensão lab (contém package.json)
+labextension-dir = "templates_menu_lab"
+
+# Hook correto: [tool.hatch.build.hooks.*] (não [tool.hatch.jupyter-builder])
+# npm_builder existe; build_jupyter_extension não existe no hatch-jupyter-builder
+[tool.hatch.build.hooks.jupyter-builder]
+build-function = "hatch_jupyter_builder.npm_builder"
+skip-if-exists = ["templates_menu_lab/labextension/package.json"]
+build-kwargs = { path = "templates_menu_lab", build_dir = "templates_menu_lab/labextension", source_dir = "templates_menu_lab", build_cmd = "build:labextension" }

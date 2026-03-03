@@ -1,0 +1,22 @@
+# Scripts (apenas local; build no CI)
+scripts/
+
+# Ambiente Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.egg-info/
+dist/
+build/
+
+# Lab extension build
+templates_menu_lab/labextension/
+templates_menu_lab/lib/
+templates_menu_lab/node_modules/
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
