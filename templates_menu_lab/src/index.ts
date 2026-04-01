@@ -9,9 +9,10 @@ import {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 import { ICommandPalette } from '@jupyterlab/apputils';
+import { URLExt } from '@jupyterlab/coreutils';
 import { IFileBrowserFactory } from '@jupyterlab/filebrowser';
 import { IMainMenu } from '@jupyterlab/mainmenu';
-import { PageConfig } from '@jupyterlab/coreutils';
+import { ServerConnection } from '@jupyterlab/services';
 import { Menu } from '@lumino/widgets';
 
 const CMD_CREATE_FROM = 'templates-menu:create-from';
@@ -21,21 +22,13 @@ interface TemplateItem {
   label: string;
 }
 
-function getBaseUrl(): string {
-  return PageConfig.getBaseUrl().replace(/\/?$/, '/');
-}
-
-/** Lê o cookie _xsrf para enviar no POST (evita 403 por XSRF no Jupyter Server). */
-function getXsrfToken(): string {
-  const match = document.cookie.match(/\b_xsrf=([^;]+)/);
-  return match ? decodeURIComponent(match[1]) : '';
-}
-
 async function fetchTemplates(): Promise<TemplateItem[]> {
-  const base = getBaseUrl();
-  const url = `${base}templates-menu/templates`;
-  const res = await fetch(url, { credentials: 'same-origin' });
-  if (!res.ok) throw new Error(`Failed to list templates: ${res.status}`);
+  const settings = ServerConnection.makeSettings();
+  const url = URLExt.join(settings.baseUrl, 'templates-menu', 'templates');
+  const res = await ServerConnection.makeRequest(url, {}, settings);
+  if (!res.ok) {
+    throw new ServerConnection.ResponseError(res);
+  }
   return res.json();
 }
 
@@ -43,21 +36,22 @@ async function createFromTemplate(
   templateId: string,
   cwd: string
 ): Promise<{ path: string }> {
-  const base = getBaseUrl();
-  const token = PageConfig.getOption('token') || '';
-  const url = `${base}templates-menu/create?cwd=${encodeURIComponent(cwd)}${token ? `&token=${encodeURIComponent(token)}` : ''}`;
-  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-  const xsrf = getXsrfToken();
-  if (xsrf) headers['X-XSRFToken'] = xsrf;
-  const res = await fetch(url, {
+  const settings = ServerConnection.makeSettings();
+  const url = URLExt.join(
+    settings.baseUrl,
+    'templates-menu',
+    `create?cwd=${encodeURIComponent(cwd)}`
+  );
+  const init: RequestInit = {
     method: 'POST',
-    credentials: 'same-origin',
-    headers,
     body: JSON.stringify({ template_id: templateId })
-  });
+  };
+  const res = await ServerConnection.makeRequest(url, init, settings);
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error((err as { error?: string }).error || `Create failed: ${res.status}`);
+    throw new Error(
+      (err as { error?: string }).error || `Create failed: ${res.status}`
+    );
   }
   return res.json();
 }

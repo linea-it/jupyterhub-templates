@@ -3,6 +3,19 @@
   "version": "0.1.0",
   "description": "Tutorials menu in JupyterLab top bar (Linea).",
   "keywords": ["jupyter", "jupyterlab", "jupyterlab-extension", "tutorials", "linea"],
+  "homepage": "https://github.com/linea-it/jupyterhub-templates-ext",
+  "bugs": {
+    "url": "https://github.com/linea-it/jupyterhub-templates-ext/issues"
+  },
+  "license": "BSD-3-Clause",
+  "author": {
+    "name": "LIneA IT",
+    "email": "helpdesk@linea.org.br"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/linea-it/jupyterhub-templates-ext.git"
+  },
   "files": [
     "lib/**/*.{d.ts,js}",
     "style/**/*.{css,js}",
@@ -20,8 +33,10 @@
   "dependencies": {
     "@jupyterlab/application": "^4.0.0",
     "@jupyterlab/apputils": "^4.0.0",
+    "@jupyterlab/coreutils": "^6.0.0",
     "@jupyterlab/filebrowser": "^4.0.0",
     "@jupyterlab/mainmenu": "^4.0.0",
+    "@jupyterlab/services": "^7.0.0",
     "@jupyterlab/translation": "^4.0.0",
     "@lumino/widgets": "^2.0.0"
   },
