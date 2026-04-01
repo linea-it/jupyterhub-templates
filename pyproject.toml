@@ -12,15 +12,14 @@ license = "BSD-3-Clause"
 authors = [
     { name = "LIneA IT", email = "helpdesk@linea.org.br" },
 ]
+dependencies = [
+    "jupyter-server>=2.0",
+]
 
 [project.urls]
 Homepage = "https://github.com/linea-it/jupyterhub-templates-ext"
 Repository = "https://github.com/linea-it/jupyterhub-templates-ext"
 "Bug Tracker" = "https://github.com/linea-it/jupyterhub-templates-ext/issues"
-
-dependencies = [
-    "jupyter-server>=2.0",
-]
 
 [project.optional-dependencies]
 dev = [
