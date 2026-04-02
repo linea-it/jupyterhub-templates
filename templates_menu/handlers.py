@@ -39,7 +39,8 @@ def _list_templates():
             if f.endswith(".ipynb"):
                 rel = os.path.relpath(os.path.join(root, f), TEMPLATES_DIR)
                 id_ = rel.replace(os.sep, "/")
-                label = os.path.splitext(os.path.basename(f))[0].replace("_", " ").replace("-", " ").title()
+                raw = os.path.splitext(os.path.basename(f))[0].replace("_", " ").replace("-", " ")
+                label = " ".join(w[:1].upper() + w[1:] for w in raw.split(" "))
                 out.append({"id": id_, "label": label})
     return sorted(out, key=lambda x: x["label"])
 

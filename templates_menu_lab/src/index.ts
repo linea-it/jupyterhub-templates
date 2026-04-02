@@ -68,12 +68,12 @@ function groupByFolder(templates: TemplateItem[]): Map<string, TemplateItem[]> {
   return map;
 }
 
-/** Formata nome da pasta para label do submenu (ex: "data-analysis" -> "Data analysis"). */
+/** Formata nome da pasta para label do submenu (ex: "data-analysis" -> "Data Analysis"). */
 function folderLabel(folder: string): string {
   if (!folder) return '';
   return folder
     .replace(/[-_]/g, ' ')
-    .replace(/\b\w/g, c => c.toUpperCase());
+    .replace(/(^|\s)\p{L}/gu, c => c.toUpperCase());
 }
 
 /** Obtém o diretório atual do navegador de ficheiros (pasta aberta à esquerda), ou '' para a raiz. */
